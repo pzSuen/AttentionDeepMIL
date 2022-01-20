@@ -51,11 +51,9 @@ class MnistBags(data_utils.Dataset):
         bags_list = []
         labels_list = []
 
-        for i in range(self.num_bag):
+        for _ in range(self.num_bag):
             bag_length = np.int(self.r.normal(self.mean_bag_length, self.var_bag_length, 1))
-            if bag_length < 1:
-                bag_length = 1
-
+            bag_length = max(bag_length, 1)
             if self.train:
                 indices = torch.LongTensor(self.r.randint(0, self.num_in_train, bag_length))
             else:
@@ -108,7 +106,7 @@ if __name__ == "__main__":
 
     len_bag_list_train = []
     mnist_bags_train = 0
-    for batch_idx, (bag, label) in enumerate(train_loader):
+    for bag, label in train_loader:
         len_bag_list_train.append(int(bag.squeeze(0).size()[0]))
         mnist_bags_train += label[0].numpy()[0]
     print('Number positive train bags: {}/{}\n'
@@ -118,7 +116,7 @@ if __name__ == "__main__":
 
     len_bag_list_test = []
     mnist_bags_test = 0
-    for batch_idx, (bag, label) in enumerate(test_loader):
+    for bag, label in test_loader:
         len_bag_list_test.append(int(bag.squeeze(0).size()[0]))
         mnist_bags_test += label[0].numpy()[0]
     print('Number positive test bags: {}/{}\n'
